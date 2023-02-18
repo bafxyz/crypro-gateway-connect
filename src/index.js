@@ -1,75 +1,54 @@
-import Onboard from "@web3-onboard/core";
-import injectedModule from "@web3-onboard/injected-wallets";
-import coinbaseModule from '@web3-onboard/coinbase'
-import trezorModule from '@web3-onboard/trezor'
-import ledgerModule from '@web3-onboard/ledger'
+import onboard from "./onboard";
+// import web3 from "web3";
 
-// Wallets
-const coinbase = coinbaseModule()
-const trezorOptions = {
-    email: 'test@test.com',
-    appUrl: 'https://www.blocknative.com'
-}
-const ledger = ledgerModule()
-const trezor = trezorModule(trezorOptions)
-
-// RPC URLs
-const ETH_MAINNET_RPC_URL = "";
-const ETH_TESTNET_RPC_URL = "";
-const MATIC_MAINNET_RPC_URL = "";
-const MATIC_TESTNET_RPC_URL = "";
-
-// Onboard
-const injected = injectedModule();
 const connect = async () => {
-    const onboard = Onboard({
-        wallets: [injected, coinbase, trezor, ledger],
-        chains: [
-            // Mainnet
-            {
-                id: '0x1',
-                token: 'ETH',
-                label: 'Ethereum Mainnet',
-                rpcUrl: ETH_MAINNET_RPC_URL || 'https://ethereum.publicnode.com'
-            },
-            // Testnet
-            {
-                id: '0x5',
-                token: 'ETH',
-                label: 'Goerli',
-                rpcUrl: ETH_TESTNET_RPC_URL || 'https://eth-goerli.public.blastapi.io'
-            },
-            // Testnet
-            {
-                id: '0x13881',
-                token: 'MATIC',
-                label: 'Polygon - Mumbai',
-                rpcUrl: MATIC_MAINNET_RPC_URL || 'https://matic-mumbai.chainstacklabs.com'
-            },
-            // Mainnet
-            {
-                id: '0x89',
-                token: 'MATIC',
-                label: 'Matic Mainnet',
-                rpcUrl: MATIC_TESTNET_RPC_URL || 'https://matic-mainnet.chainstacklabs.com'
-            }
-        ],
-        appMetadata: {
-            name: "My App",
-            icon: '<svg width="40" height="40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /></svg>',
-            description: "Example showcasing how to connect a wallet.",
-            recommendedInjectedWallets: [
-                { name: 'MetaMask', url: 'https://metamask.io' },
-                { name: 'Coinbase', url: 'https://wallet.coinbase.com/' }
-            ]
-        }
-    });
+  await onboard.connectWallet();
+};
 
-    const wallets = await onboard.connectWallet();
-    console.log(wallets);
+const mumbaiContractAddress = "0xfb2BC39C052f5F24dCb0c3c623d18de4cbB081d5";
+
+const contractAddress = mumbaiContractAddress;
+const contractABI = [
+  {
+    inputs: [
+      {
+        internalType: "address payable",
+        name: "_to",
+        type: "address",
+      },
+    ],
+    name: "transferFunds",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+];
+
+const transfer = async (to, value) => {
+  const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+  // Create a new transaction object
+  const tx = contract.methods.transferFunds(to);
+
+  // Get the gas estimate for the transaction
+  const gasEstimate = await tx.estimateGas({ from });
+
+  // Send the transaction
+  const result = await tx.send({
+    from,
+    gas: gasEstimate,
+    value: web3.utils.toWei(value, "ether"),
+  });
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("connect");
-    button.addEventListener("click", connect);
+  const button = document.getElementById("connect");
+  button.addEventListener("click", connect);
+
+  const transferButton = document.getElementById("transfer");
+  transferButton.addEventListener("click", () => {
+    const value = document.getElementById("to").value;
+    const to = document.getElementById("transfer-amount").value;
+    transfer(to, value);
+  });
 });
