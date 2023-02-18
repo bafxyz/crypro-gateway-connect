@@ -1,0 +1,35 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "start": "npx parcel src/index.html",
+    "build": "npx parcel build src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "crypto-browserify": "^3.12.0",
+    "parcel": "latest",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "@web3-onboard/coinbase": "^2.2.0",
+    "@web3-onboard/core": "^2.15.2",
+    "@web3-onboard/injected-wallets": "^2.8.0",
+    "@web3-onboard/ledger": "^2.4.2",
+    "@web3-onboard/trezor": "^2.3.3",
+    "@web3-onboard/walletconnect": "^2.2.2",
+    "autoprefixer": "^10.4.13",
+    "postcss-cli": "^10.1.0",
+    "tailwindcss": "^3.2.7"
+  }
+}
