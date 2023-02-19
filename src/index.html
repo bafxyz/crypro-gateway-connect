@@ -9,44 +9,47 @@
 </head>
 
 <body>
-  <div id="app">
-    <div class="flex items-center justify-center h-screen">
-      <div class="bg-gray-100 p-8 rounded shadow-md text-center">
-        <h1 class="text-2xl font-bold mb-4">Welcome to My App</h1>
-        <div class="flex flex-col space-y-4">
-          <label for="to" class="text-gray-600 font-medium">To:</label>
-          <div class="relative">
-            <input id="to" type="text"
-              class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-indigo-500 py-2 px-3">
-            <label for="to"
-              class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all">Enter
-              recipient address</label>
-          </div>
-        </div>
-
-        <div class="flex flex-col space-y-4">
-          <label for="transfer-amount" class="text-gray-600 font-medium">Transfer Amount:</label>
-          <div class="relative">
-            <input id="transfer-amount" type="text"
-              class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-indigo-500 py-2 px-3">
-            <label for="transfer-amount"
-              class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all">Enter
-              transfer amount</label>
-          </div>
-        </div>
-
-        <button id="connect" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2">
-          Connect
-        </button>
-
-        <button id="transfer" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-2">
-          Transfer
-        </button>
-
+  <div id="app" class="max-w-sm mx-auto my-10">
+    <h1 class="text-2xl font-bold text-gray-900">Client</h1>
+    <p class="text-sm text-gray-500">This is a simple client to interact with the blockchain.</p>
+    <div class="flex flex-row gap-4">
+      <button type="button" id="connect"
+        class="my-4 rounded-md border border-green-300 bg-green-400 py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Connect</button>
+      <button type="button" id="disconnect"
+        class="my-4 rounded-md border border-red-300 bg-red-400 py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Disconnect</button>
+    </div>
+    <div class="py-5 flex flex-col gap-4">
+      <div>
+        <p class="text-sm text-gray-500">Your wallet address</p>
+        <p id="address" class="text-sm text-gray-900"></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Your balance</p>
+        <pre id="balance"></pre>
       </div>
     </div>
+
+    <form action="#" class="">
+      <div class="my-5">
+        <label for="to" class="block text-sm font-medium text-gray-700">Receiver address</label>
+        <input type="text" name="to" id="to"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          autocomplete="on">
+      </div>
+      <div class="my-5">
+        <label for="transfer-amount" class="block text-sm font-medium text-gray-700">Transfer amount</label>
+        <input type="number" name="transfer-amount" id="transfer-amount"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          min="0">
+      </div>
+      <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
+        <button type="button" id="transfer"
+          class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Transfer</button>
+      </div>
+    </form>
+
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+
   <script type="module" src="./index.js"></script>
 </body>
 
