@@ -50,13 +50,13 @@ const disconnect = async () => {
     }
 }
 
-const approveUsdc = async (from, usdcAddress, contractAddress) => {
+const approveUsdc = async (usdcAddress, contractAddress) => {
     const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, provider.getSigner());
     const approveTx = await usdcContract.approve(contractAddress, MaxUint256);
     return approveTx.wait();
 };
 
-const transferToContract = async (from, to, value, contractAddress) => {
+const transferToContract = async (to, value, contractAddress) => {
     const contract = new ethers.Contract(contractAddress, contractAbi, provider.getSigner());
     return contract.transferFunds(to, { value: ethers.utils.parseEther(value) });
 }
@@ -73,10 +73,10 @@ const transfer = async (to, value) => {
         }
 
         // Approve the smart contract to spend USDC
-        await approveUsdc(from, usdcAddress, contractAddress);
+        await approveUsdc(usdcAddress, contractAddress);
 
         // Transfer the approved USDC to the smart contract
-        const result = await transferToContract(from, to, value, contractAddress);
+        const result = await transferToContract(to, value, contractAddress);
         console.log('🚀 Money sent result: ', result);
     } catch (error) {
         console.error(error);
