@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     connectButton.addEventListener("click", () => {
         connect().then((connected) => {
             if (connected) {
-                const { address, balance } = connected;
+                const { address, balance } = connected.accounts[0];
                 document.getElementById("address").innerText = address;
                 document.getElementById("balance").innerText = JSON.stringify(balance);
             }
