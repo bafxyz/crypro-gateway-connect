@@ -3,6 +3,16 @@ import { ethers } from "ethers";
 import usdcAbi from "./usdc-abi.json";
 import contractAbi from "./contract-abi.json";
 import { MaxUint256 } from '@ethersproject/constants'
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+
+// In order to use custom RPC URLs, if there is a RPC error, you need to set up an API key for each network in your .env file
+// You should also set up RPC_URL in your .env file in that case
+const jsonRpcApiKeyMap = new Map([
+    [1, process.env.ETH_API_KEY],
+    [5, process.env.ETH_GOERLI_API_KEY],
+    [137, process.env.MATIC_API_KEY],
+    [80001, process.env.MATIC_MUMBAI_API_KEY],
+]);
 
 const contractAddressMap = new Map([
     [1, process.env.ETH_CONTRACT_ADDRESS],
@@ -26,7 +36,30 @@ const setBalance = (balance) => {
     document.getElementById("balance").innerText = JSON.stringify(balance);
 };
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
+const getChainId = async () => {
+    const provider = ethers.getDefaultProvider();
+    const network = await provider.getNetwork();
+
+    return network.chainId;
+};
+
+const getProvider = async () => {
+    const chainId = await getChainId();
+
+    let provider;
+    const apiKey = jsonRpcApiKeyMap.get(chainId);
+    const rpcUrl = process.env.RPC_URL;
+
+    if (window.ethereum) {
+        provider = new Web3Provider(window.ethereum);
+    } else if (apiKey) {
+        provider = new JsonRpcProvider(rpcUrl, { name: chainId, chainId });
+    } else {
+        provider = ethers.getDefaultProvider();
+    }
+
+    return provider;
+};
 
 const connect = async () => {
     const wallets = await onboard.connectWallet();
@@ -50,51 +83,52 @@ const disconnect = async () => {
     }
 }
 
-const checkUsdcApproval = async (usdcAddress, contractAddress) => {
-    const signer = provider.getSigner();
-    const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
-
-    const from = await signer.getAddress();
+const checkUsdcApproval = async (from, usdcContract, contractAddress) => {
     const approvedAmount = await usdcContract.allowance(from, contractAddress);
 
     return approvedAmount.gte(MaxUint256);
 };
 
-const approveUsdc = async (usdcAddress, contractAddress) => {
-    const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, provider.getSigner());
+const approveUsdc = async (usdcContract, contractAddress) => {
     const approveTx = await usdcContract.approve(contractAddress, MaxUint256);
+
     return approveTx.wait();
 };
 
-
 const transfer = async (to, value) => {
+    const provider = await getProvider();
     const chainId = await provider.getNetwork().then(network => network.chainId);
+    const signer = provider.getSigner();
+    const from = await signer.getAddress();
+
     const usdcAddress = usdcAddressMap.get(chainId)
+    const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
+
     const contractAddress = contractAddressMap.get(chainId);
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
     try {
-        const from = onboard.state.get().wallets?.[0].accounts?.[0]?.address;
         if (!from) {
             throw new Error('No account is connected');
         }
 
         // Check if USDC is already approved to be spent by the contract
-        const isApproved = await checkUsdcApproval(usdcAddress, contractAddress);
-        if (!isApproved) {
+        const isUsdcApproved = await checkUsdcApproval(from, usdcContract, contractAddress);
+
+        if (!isUsdcApproved) {
             // Approve the smart contract to spend USDC
-            await approveUsdc(usdcAddress, contractAddress);
+            await approveUsdc(usdcContract, contractAddress);
         }
 
         // Transfer the approved USDC to the smart contract
-        const contract = new ethers.Contract(contractAddress, contractAbi, provider.getSigner());
-        const valueInWei = ethers.utils.parseEther(value);
-        console.log({
-            to,
-            value,
-            valueInWei,
-            usdcAddress,
-            contractAddress
-        })
+        // Use parseUnits instead of parseEther to account for USDC's 6 decimal places
+        const valueInWei = ethers.utils.parseUnits(value, 6);
+        const allowance = await usdcContract.allowance(from, contractAddress);
+
+        if (allowance.lt(valueInWei)) {
+            await approveUsdc(usdcContract, contractAddress);
+        }
+
         const tx = await contract.transferFunds(to, { value: valueInWei, gasLimit: 3000000 });
         console.log('🚀 Money sent result: ', tx.hash);
     } catch (error) {
