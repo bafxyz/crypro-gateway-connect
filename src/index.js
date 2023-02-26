@@ -56,16 +56,6 @@ const approveUsdc = async (usdcAddress, contractAddress) => {
     return approveTx.wait();
 };
 
-const transferToContract = async (to, value, contractAddress, options = {}) => {
-    const transaction = {
-        to: contractAddress,
-        value: ethers.utils.parseEther(value),
-        ...options,
-    };
-
-    return provider.getSigner().sendTransaction(transaction);
-};
-
 
 const transfer = async (to, value) => {
     const chainId = await provider.getNetwork().then(network => network.chainId);
@@ -82,8 +72,10 @@ const transfer = async (to, value) => {
         await approveUsdc(usdcAddress, contractAddress);
 
         // Transfer the approved USDC to the smart contract
-        const result = await transferToContract(to, value, contractAddress, { gasLimit: 100000 });
-        console.log('🚀 Money sent result: ', result);
+        const contract = new ethers.Contract(contractAddress, contractAbi, provider.getSigner());
+        const valueInWei = ethers.utils.parseEther(value);
+        const tx = await contract.transferFunds(to, { value: valueInWei, gasLimit: 3000000 });
+        console.log('🚀 Money sent result: ', tx.hash);
     } catch (error) {
         console.error(error);
     }
