@@ -1,0 +1,15 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address payable",
+                "name": "_to",
+                "type": "address"
+            }
+        ],
+        "name": "transferFunds",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+]
