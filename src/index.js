@@ -74,6 +74,13 @@ const transfer = async (to, value) => {
         // Transfer the approved USDC to the smart contract
         const contract = new ethers.Contract(contractAddress, contractAbi, provider.getSigner());
         const valueInWei = ethers.utils.parseEther(value);
+        console.log({
+            to,
+            value,
+            valueInWei,
+            usdcAddress,
+            contractAddress
+        })
         const tx = await contract.transferFunds(to, { value: valueInWei, gasLimit: 3000000 });
         console.log('🚀 Money sent result: ', tx.hash);
     } catch (error) {
