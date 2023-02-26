@@ -1,7 +1,7 @@
 import onboard from "./onboard";
 import { ethers } from "ethers";
-import usdcAbi from "./usdc-abi.json";
-import contractAbi from "./contract-abi.json";
+import usdcAbi from "../abi/usdc-abi.json";
+import contractAbi from "../abi/contract-abi.json";
 import { MaxUint256 } from '@ethersproject/constants'
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 
@@ -28,14 +28,6 @@ const usdcAddressMap = new Map([
     [80001, process.env.MATIC_MUMBAI_USDC_ADDRESS],
 ]);
 
-const setAddress = (address) => {
-    document.getElementById("address").innerText = address;
-};
-
-const setBalance = (balance) => {
-    document.getElementById("balance").innerText = JSON.stringify(balance);
-};
-
 const getChainId = async () => {
     const provider = ethers.getDefaultProvider();
     const network = await provider.getNetwork();
@@ -61,18 +53,14 @@ const getProvider = async () => {
     return provider;
 };
 
-const connect = async () => {
+export const connect = async () => {
     const wallets = await onboard.connectWallet();
     const connected = wallets[0]
 
-    // If the user has a wallet connected, set the address and balance
-    if (connected) {
-        setAddress(connected.accounts[0].address)
-        setBalance(connected.accounts[0].balance)
-    }
+    return connected
 }
 
-const disconnect = async () => {
+export const disconnect = async () => {
     const wallets = await onboard.connectWallet();
     const connected = wallets[0]
 
@@ -83,25 +71,25 @@ const disconnect = async () => {
     }
 }
 
-const checkUsdcApproval = async (from, usdcContract, contractAddress) => {
+export const checkUsdcApproval = async (from, usdcContract, contractAddress) => {
     const approvedAmount = await usdcContract.allowance(from, contractAddress);
 
     return approvedAmount.gte(MaxUint256);
 };
 
-const approveUsdc = async (usdcContract, contractAddress) => {
+export const approveUsdc = async (usdcContract, contractAddress) => {
     const approveTx = await usdcContract.approve(contractAddress, MaxUint256);
 
     return approveTx.wait();
 };
 
-const transfer = async (to, value) => {
+export const transfer = async (to, value) => {
     const provider = await getProvider();
     const chainId = await provider.getNetwork().then(network => network.chainId);
     const signer = provider.getSigner();
     const from = await signer.getAddress();
 
-    const usdcAddress = usdcAddressMap.get(chainId)
+    const usdcAddress = usdcAddressMap.get(chainId);
     const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
 
     const contractAddress = contractAddressMap.get(chainId);
@@ -135,19 +123,3 @@ const transfer = async (to, value) => {
         console.error(error);
     }
 };
-
-document.addEventListener("DOMContentLoaded", function () {
-    const connectButton = document.getElementById("connect");
-    connectButton.addEventListener("click", connect);
-
-    const disconnectButton = document.getElementById("disconnect");
-    disconnectButton.addEventListener("click", disconnect);
-
-    const transferButton = document.getElementById("transfer");
-    transferButton.addEventListener("click", () => {
-        const to = document.getElementById("to").value;
-        const value = document.getElementById("transfer-amount").value;
-        transfer(to, value);
-    });
-});
-

@@ -6,6 +6,8 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "start": "npx parcel src/index.html",
+    "vanilla": "npx parcel src/vanillajs.html",
+    "react": "npx parcel src/react.html",
     "build": "npx parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +18,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.13",
     "crypto-browserify": "^3.12.0",
@@ -37,6 +41,8 @@
     "@web3-onboard/trezor": "^2.3.3",
     "@web3-onboard/trust": "^2.0.0",
     "@web3-onboard/walletconnect": "^2.2.2",
-    "ethers": "5.7.2"
+    "ethers": "5.7.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
