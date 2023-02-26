@@ -50,6 +50,16 @@ const disconnect = async () => {
     }
 }
 
+const checkUsdcApproval = async (usdcAddress, contractAddress) => {
+    const signer = provider.getSigner();
+    const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
+
+    const from = await signer.getAddress();
+    const approvedAmount = await usdcContract.allowance(from, contractAddress);
+
+    return approvedAmount.gte(MaxUint256);
+};
+
 const approveUsdc = async (usdcAddress, contractAddress) => {
     const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, provider.getSigner());
     const approveTx = await usdcContract.approve(contractAddress, MaxUint256);
@@ -68,8 +78,12 @@ const transfer = async (to, value) => {
             throw new Error('No account is connected');
         }
 
-        // Approve the smart contract to spend USDC
-        await approveUsdc(usdcAddress, contractAddress);
+        // Check if USDC is already approved to be spent by the contract
+        const isApproved = await checkUsdcApproval(usdcAddress, contractAddress);
+        if (!isApproved) {
+            // Approve the smart contract to spend USDC
+            await approveUsdc(usdcAddress, contractAddress);
+        }
 
         // Transfer the approved USDC to the smart contract
         const contract = new ethers.Contract(contractAddress, contractAbi, provider.getSigner());
