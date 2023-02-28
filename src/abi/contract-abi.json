@@ -2,19 +2,14 @@
     {
         "inputs": [
             {
+                "internalType": "address payable",
+                "name": "_commissionWallet",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
                 "name": "_commissionRate",
                 "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_owner",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_usdcTokenAddress",
-                "type": "address"
             }
         ],
         "stateMutability": "nonpayable",
@@ -26,47 +21,22 @@
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "sender",
+                "name": "previousOwner",
                 "type": "address"
             },
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "receiver",
+                "name": "newOwner",
                 "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "value",
-                "type": "uint256"
             }
         ],
-        "name": "TransferFunds",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "value",
-                "type": "uint256"
-            }
-        ],
-        "name": "WithdrawCommission",
+        "name": "OwnershipTransferred",
         "type": "event"
     },
     {
         "inputs": [],
-        "name": "getBalance",
+        "name": "commissionRate",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -79,78 +49,7 @@
     },
     {
         "inputs": [],
-        "name": "getCommissionRate",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "getFeeAmount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getUSDCTokenAddress",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getUSDCTokenBalance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getUSDCTokenBalanceFromAddress",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "owner",
+        "name": "commissionWallet",
         "outputs": [
             {
                 "internalType": "address payable",
@@ -163,7 +62,20 @@
     },
     {
         "inputs": [],
-        "name": "pause",
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -172,30 +84,47 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_commission",
+                "name": "_commissionRate",
                 "type": "uint256"
             }
         ],
         "name": "setCommissionRate",
-        "outputs": [
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address payable",
+                "name": "_commissionWallet",
+                "type": "address"
+            }
+        ],
+        "name": "setCommissionWallet",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "amount",
                 "type": "uint256"
             }
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_owner",
-                "type": "address"
-            }
-        ],
-        "name": "setOwner",
+        "name": "transfer",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -204,38 +133,11 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_usdcTokenAddress",
+                "name": "newOwner",
                 "type": "address"
             }
         ],
-        "name": "setUSDCTokenAddress",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            }
-        ],
-        "name": "transferFunds",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "unpause",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "withdrawFees",
+        "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

@@ -1,7 +1,6 @@
 import onboard from "./onboard";
 import { ethers } from "ethers";
 import usdcAbi from "../abi/usdc-abi.json";
-import contractAbi from "../abi/contract-abi.json";
 import { MaxUint256 } from '@ethersproject/constants'
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 
@@ -83,17 +82,16 @@ export const approveUsdc = async (usdcContract, contractAddress) => {
     return approveTx.wait();
 };
 
-export const transfer = async (to, value) => {
+export const transfer = async (to, amount) => {
     const provider = await getProvider();
     const chainId = await provider.getNetwork().then(network => network.chainId);
     const signer = provider.getSigner();
     const from = await signer.getAddress();
 
     const usdcAddress = usdcAddressMap.get(chainId);
-    const usdcContract = new ethers.Contract(usdcAddress, usdcAbi, signer);
+    const usdc = new ethers.Contract(usdcAddress, usdcAbi, signer);
 
     const contractAddress = contractAddressMap.get(chainId);
-    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
     try {
         if (!from) {
@@ -101,23 +99,25 @@ export const transfer = async (to, value) => {
         }
 
         // Check if USDC is already approved to be spent by the contract
-        const isUsdcApproved = await checkUsdcApproval(from, usdcContract, contractAddress);
+        const isUsdcApproved = await checkUsdcApproval(from, usdc, contractAddress);
 
         if (!isUsdcApproved) {
             // Approve the smart contract to spend USDC
-            await approveUsdc(usdcContract, contractAddress);
+            await approveUsdc(usdc, contractAddress);
         }
-
         // Transfer the approved USDC to the smart contract
         // Use parseUnits instead of parseEther to account for USDC's 6 decimal places
-        const valueInWei = ethers.utils.parseUnits(value, 6);
-        const allowance = await usdcContract.allowance(from, contractAddress);
+        const amountInWei = ethers.utils.parseUnits(amount, 6);
 
-        if (allowance.lt(valueInWei)) {
-            await approveUsdc(usdcContract, contractAddress);
+        // Allowance is how much of the token from the given address (from) is allowed to be spent by the contract (contractAddress)
+        const allowance = await usdc.allowance(from, contractAddress);
+
+        // If the account has no allowance to spend, the transaction will fail.
+        if (allowance.lt(amountInWei)) {
+            await approveUsdc(usdc, contractAddress);
         }
 
-        const tx = await contract.transferFunds(to, { value: valueInWei, gasLimit: 3000000 });
+        const tx = await usdc.transfer(contractAddress, amountInWei);
         console.log('🚀 Money sent result: ', tx.hash);
     } catch (error) {
         console.error(error);
