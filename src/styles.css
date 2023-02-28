@@ -2,3 +2,13 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+/* You can also use a custom CSS variables */
+:root {
+  --w3o-background-color: unset;
+  --w3o-foreground-color: unset;
+  --w3o-text-color: unset;
+  --w3o-border-color: unset;
+  --w3o-action-color: unset;
+  --w3o-border-radius: unset;
+}

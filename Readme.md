@@ -27,6 +27,8 @@ Run the following command on your local environment:
 git clone --depth=1 https://github.com/bafxyz/crypto-gateway-connect.git
 cd crypto-gateway-connect
 npm install
+
+rename .env.example to .env or .env.local
 ```
 
 Then, you can run locally in development mode with live reload:
