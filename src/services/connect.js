@@ -97,37 +97,24 @@ export const transfer = async (to, amount) => {
 
   const usdcAddress = usdcAddressMap.get(chainId);
   const usdc = new ethers.Contract(usdcAddress, usdcAbi, signer);
-  const decimals = await usdc.decimals();
+  // const decimals = await usdc.decimals();
 
   const contractAddress = contractAddressMap.get(chainId);
+  console.log(
+    "🚀 ~ file: connect.js:103 ~ transfer ~ contractAddress:",
+    contractAddress
+  );
   const commissionProxy = new ethers.Contract(
     contractAddress,
     contractAbi,
     signer
   );
-  // Transfer the approved USDC to the smart contract
-  // Use parseUnits instead of parseEther to account for USDC's 6 decimal places
-  const amountInWei = ethers.utils.parseUnits(amount, decimals);
-
-  console.log("🚀 ~ file: connect.js:97 ~ transfer ~ from:", from);
-  console.log("🚀 ~ file: connect.js:91 ~ transfer ~ to:", to);
-  console.log(
-    "🚀 ~ file: connect.js:103 ~ transfer ~ contractAddress:",
-    contractAddress
-  );
-  console.log(
-    "🚀 ~ file: connect.js:99 ~ transfer ~ usdcAddress:",
-    usdcAddress
-  );
-  console.log(
-    "🚀 ~ file: connect.js:115 ~ transfer ~ amountInWei:",
-    amountInWei
-  );
-
   try {
     if (!from) {
       throw new Error("No account is connected");
     }
+
+    const _amount = ethers.utils.parseUnits(amount, 6).toString();
 
     // Check if USDC is already approved to be spent by the contract
     const allowanceAmount = await checkUsdcAllowance(
@@ -136,19 +123,14 @@ export const transfer = async (to, amount) => {
       contractAddress
     );
 
-    console.log(
-      "🚀 ~ file: connect.js:127 ~ transfer ~ allowanceAmount:",
-      allowanceAmount
-    );
-
-    if (!allowanceAmount.gte(amountInWei)) {
+    if (!allowanceAmount.gte(_amount)) {
       // Approve the smart contract to spend USDC
       await approveUsdc(usdc, contractAddress);
     }
 
-    console.log("🚀 ~ file: connect.js:137 ~ transfer ~ to:", to);
-
-    const tx = await commissionProxy.transferFunds(to, amountInWei);
+    const tx = await commissionProxy.transferFunds(to, _amount, {
+      gasLimit: 999999,
+    });
     await tx.wait();
 
     // const tx = await usdc.transfer(contractAddress, amountInWei);
