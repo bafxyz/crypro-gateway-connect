@@ -6,8 +6,6 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "start": "npx parcel src/index.html",
-    "vanilla": "npx parcel src/vanillajs.html",
-    "react": "npx parcel src/react.html",
     "build": "npx parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

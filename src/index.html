@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <title>Client</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div id="app" class="max-w-sm mx-auto my-10">
+    <h1 class="text-2xl font-bold text-gray-900">Client</h1>
+    <p class="text-sm text-gray-500">
+      This is a simple client to interact with the blockchain.
+    </p>
+    <div class="flex flex-row gap-4">
+      <button type="button" id="connect"
+        class="my-4 rounded-md border border-green-300 bg-green-400 py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Connect
+      </button>
+      <button type="button" id="disconnect"
+        class="my-4 rounded-md border border-red-300 bg-red-400 py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Disconnect
+      </button>
+    </div>
+    <div class="py-5 flex flex-col gap-4">
+      <div>
+        <p class="text-sm text-gray-500">Your wallet address</p>
+        <p id="address" class="text-sm text-gray-900"></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Your balance</p>
+        <pre id="balance"></pre>
+      </div>
+    </div>
+
+    <form action="#" class="">
+      <div class="my-5">
+        <label for="to" class="block text-sm font-medium text-gray-700">Receiver address</label>
+        <input type="text" name="to" id="to"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          autocomplete="on" />
+      </div>
+      <div class="my-5">
+        <label for="transfer-amount" class="block text-sm font-medium text-gray-700">Transfer amount</label>
+        <input type="number" name="transfer-amount" id="transfer-amount"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          min="0" />
+      </div>
+      <div>
+        <input type="radio" id="USDC" name="stableCoin" value="USDC" checked />
+        <label for="USDC">USDC</label><br />
+        <input type="radio" id="USDt" name="stableCoin" value="USDt" />
+        <label for="USDt">USDt</label><br />
+      </div>
+      <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
+        <button type="button" id="transfer"
+          class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Transfer
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script type="module" src="./index.js"></script>
+</body>
+
+</html>
