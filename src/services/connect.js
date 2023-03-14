@@ -1,6 +1,7 @@
 import onboard from "./onboard";
 import { ethers } from "ethers";
 import usdcAbi from "../abi/usdc-abi.json";
+import usdtAbi from "../abi/usdt-abi.json";
 import contractAbi from "../abi/contract-abi.json";
 import { MaxUint256 } from "@ethersproject/constants";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
@@ -26,6 +27,13 @@ const usdcAddressMap = new Map([
   [5, process.env.ETH_GOERLI_USDC_ADDRESS],
   [137, process.env.MATIC_USDC_ADDRESS],
   [80001, process.env.MATIC_MUMBAI_USDC_ADDRESS],
+]);
+
+const usdtAddressMap = new Map([
+  [1, process.env.ETH_USDT_ADDRESS],
+  [5, process.env.ETH_GOERLI_USDT_ADDRESS],
+  [137, process.env.MATIC_USDT_ADDRESS],
+  [80001, process.env.MATIC_MUMBAI_USDT_ADDRESS],
 ]);
 
 const getChainId = async () => {
@@ -71,23 +79,26 @@ export const disconnect = async () => {
   }
 };
 
-export const checkUsdcAllowance = async (
+export const checkStableCoinAllowance = async (
   from,
-  usdcContract,
+  stableCoinTokenContract,
   contractAddress
 ) => {
-  const approvedAmount = await usdcContract.allowance(from, contractAddress);
+  const approvedAmount = await stableCoinTokenContract.allowance(
+    from,
+    contractAddress
+  );
 
   return approvedAmount;
 };
 
-export const approveUsdc = async (usdcContract, contractAddress) => {
+export const approveStableCoin = async (usdcContract, contractAddress) => {
   const approveTx = await usdcContract.approve(contractAddress, MaxUint256);
 
   return approveTx.wait();
 };
 
-export const transfer = async (to, amount) => {
+export const transfer = async (to, amount, isUSDC = true) => {
   const provider = await getProvider();
   const chainId = await provider
     .getNetwork()
@@ -95,15 +106,19 @@ export const transfer = async (to, amount) => {
   const signer = provider.getSigner();
   const from = await signer.getAddress();
 
-  const usdcAddress = usdcAddressMap.get(chainId);
-  const usdc = new ethers.Contract(usdcAddress, usdcAbi, signer);
+  const stableCoinAddress = isUSDC
+    ? usdcAddressMap.get(chainId)
+    : usdtAddressMap.get(chainId);
+  const stableCoinAbi = isUSDC ? usdcAbi : usdtAbi;
+
+  const stableCoinTokenContract = new ethers.Contract(
+    stableCoinAddress,
+    stableCoinAbi,
+    signer
+  );
   // const decimals = await usdc.decimals();
 
   const contractAddress = contractAddressMap.get(chainId);
-  console.log(
-    "🚀 ~ file: connect.js:103 ~ transfer ~ contractAddress:",
-    contractAddress
-  );
   const commissionProxy = new ethers.Contract(
     contractAddress,
     contractAbi,
@@ -117,20 +132,25 @@ export const transfer = async (to, amount) => {
     const _amount = ethers.utils.parseUnits(amount, 6).toString();
 
     // Check if USDC is already approved to be spent by the contract
-    const allowanceAmount = await checkUsdcAllowance(
+    const allowanceAmount = await checkStableCoinAllowance(
       from,
-      usdc,
+      stableCoinTokenContract,
       contractAddress
     );
 
     if (!allowanceAmount.gte(_amount)) {
       // Approve the smart contract to spend USDC
-      await approveUsdc(usdc, contractAddress);
+      await approveStableCoin(stableCoinTokenContract, contractAddress);
     }
 
-    const tx = await commissionProxy.transferFunds(to, _amount, {
-      gasLimit: 999999,
-    });
+    const tx = await commissionProxy.transferFunds(
+      to,
+      _amount,
+      stableCoinAddress,
+      {
+        gasLimit: 999999,
+      }
+    );
     await tx.wait();
 
     // const tx = await usdc.transfer(contractAddress, amountInWei);

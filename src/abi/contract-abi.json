@@ -15,6 +15,11 @@
         "internalType": "address",
         "name": "_usdcTokenAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_usdtTokenAddress",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -36,6 +41,12 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "stableCoinToken",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "value",
@@ -52,6 +63,12 @@
         "indexed": true,
         "internalType": "address",
         "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "stableCoinToken",
         "type": "address"
       },
       {
@@ -224,6 +241,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "stableCoinTokenAddress",
+        "type": "address"
       }
     ],
     "name": "transferFunds",
@@ -234,13 +256,6 @@
   {
     "inputs": [],
     "name": "unpause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "withdrawFees",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
