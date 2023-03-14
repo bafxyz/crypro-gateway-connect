@@ -33,20 +33,20 @@ $ npm run start
 
 ### Usage
 
-Check src/index.js for usage. and src/index.html for example.
+Check `src/index.js` for usage. and `src/index.html` for example.
 
 ### Note
 You can use this project as a template for your own project. You can switch networks in the wallet connect modal.
 For this example, I have used the following networks:
 #### Production
-Ethereum Mainnet
-Polygon Mainnet
+- Ethereum Mainnet
+- Polygon Mainnet
 
 #### Testnet
-Ethereum Goerli
-Polygon Mumbai
+- Ethereum Goerli
+- Polygon Mumbai
 
 We added support for the following tokens:
-USDC
-USDT
+- USDC
+- USDT
 
